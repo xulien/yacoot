@@ -184,8 +184,8 @@ describe('exec test1', function() {
     var image = new Image(params);
 
     it('should return an optimized image', function(done) {
-       image.exec(function(err, stdout, stderr) {
-           console.log(stdout, stderr);
+       image.exec(function(err, stdout) {
+           if (err) { throw err; }
            done();
        });
     });
@@ -204,7 +204,7 @@ describe('exec test2', function() {
 
     it('should return an optimized image', function(done) {
         image.exec(function(err, stdout, stderr) {
-            console.log(stdout, stderr);
+            if (err) { throw err; }
             done();
         });
     });
@@ -223,7 +223,7 @@ describe('exec test3', function() {
 
     it('should return an optimized image', function(done) {
         image.exec(function(err, stdout, stderr) {
-            console.log(stdout, stderr);
+            if (err) { throw err; }
             done();
         });
     });
