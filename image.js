@@ -31,10 +31,10 @@ function Image(params) {
 Image.prototype.exec = function(cb) {
     var self = this;
 
-    if (!self.src) return cb(new Error('no picture'));
-    if (typeof self.src !== 'string' ) return cb(new Error('src must be a string'));
-    if (!self.name) return cb(new Error('image name is needed'));
-    if (!self.target) return cb(new Error('target path is needed'));
+    if (!self.src) { return cb(new Error('no picture')); }
+    if (typeof self.src !== 'string' ) { return cb(new Error('src must be a string')); }
+    if (!self.name) { return cb(new Error('image name is needed')); }
+    if (!self.target) { return cb(new Error('target path is needed')); }
 
     async.waterfall([
         function(callback) {
@@ -76,7 +76,7 @@ Image.prototype.info = function (cb) {
         self.srcWidth = parseInt(dimension[0]);
         self.srcHeight = parseInt(dimension[1]);
         self.srcRatio = self.srcWidth / self.srcHeight;
-        if (!self.targetType) self.targetType = self.srcType;
+        if (!self.targetType) { self.targetType = self.srcType; }
 
         cb(null);
     });
@@ -86,7 +86,7 @@ Image.prototype.identify = function(cb) {
     var self = this;
 
     exec('identify ' + self.src, function(err, stdout, stderr) {
-        cb(err, stdout);
+        cb(err, stdout, stderr);
     });
 };
 
@@ -97,8 +97,8 @@ Image.prototype.resize = function (cb) {
 
     var geometrie = (self.targetRatio > self.srcRatio) ? self.targetWidth: 'x' + self.targetHeight;
     var ext = '';
-    if (self.targetType === 'JPEG') ext = '.jpg';
-    if (self.targetType === 'PNG') ext = '.png';
+    if (self.targetType === 'JPEG') { ext = '.jpg'; }
+    if (self.targetType === 'PNG') { ext = '.png'; }
 
     mkdirp(self.target, self.mode, function(err) {
         if (err) {
@@ -121,8 +121,9 @@ Image.prototype.optimize = function(cb) {
             });
             break;
         case 'PNG':
-            console.log('png');
-            return cb('png');
+            self.optipng(self.target + '/' + self.name, function(err, stdout, stderr) {
+                return cb(err, stdout, stderr);
+            });
             break;
         default:
             cb(new Error('picture are not JPG or PNG'));
@@ -132,6 +133,12 @@ Image.prototype.optimize = function(cb) {
 
 Image.prototype.jpegoptim = function (path, cb) {
     exec('jpegoptim --max=80 --strip-all --all-progressive ' + path, function(err, stdout, stderr) {
+        cb(err, stdout, stderr);
+    });
+}
+
+Image.prototype.optipng = function (path, cb) {
+    exec('optipng -o5 ' + path, function(err, stdout, stderr) {
         cb(err, stdout, stderr);
     });
 }
