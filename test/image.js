@@ -1,5 +1,8 @@
 var Image = require('../image');
 var should = require('should');
+var mocha = require('mocha');
+var describe = mocha.describe;
+var it = mocha.it;
 
 describe('Image Object test1.jpg', function() {
 
@@ -114,8 +117,9 @@ describe('Image Object test2.jpg', function() {
     describe('#identify()', function() {
         it('should return a string with standart image info', function(done) {
             image.identify(function(err, values) {
-                if (err) throw err;
-                values.should.equal('test/samples/test2.jpg JPEG 540x720 540x720+0+0 8-bit sRGB 37.3KB 0.000u 0:00.000\n');
+                if (err) { throw err; }
+                values = values.slice(0,53);
+                values.should.equal('test/samples/test2.jpg JPEG 540x720 540x720+0+0 8-bit');
                 done();
             });
         });
@@ -241,8 +245,7 @@ describe('exec with obj src', function() {
 
     it('should return an error', function(done) {
         image.exec(function(err, stdout, stderr) {
-            console.log(err, stdout, stderr);
-            if (err) throw err;
+            should.exist(err);
             done();
         });
     });
