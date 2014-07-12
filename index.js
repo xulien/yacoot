@@ -1,14 +1,16 @@
+"use strict";
+
 var Image = require('./image');
 var async = require('async');
 
-function main(pictures, cb) {
+module.exports = function(pictures, cb) {
 
     if (Array.isArray(pictures)) {
 
         var q = async.queue(function (task, callback) {
             var image = new Image(task);
             image.exec(function(err) {
-                if (err) console.log(new Error(err));
+                if (err) { return cb(new Error(err)); }
                 callback();
             });
         }, 2);
@@ -27,7 +29,8 @@ function main(pictures, cb) {
     } else {
         var image = new Image(pictures);
         image.exec(function(err) {
-            if (err) console.log(new Error(err));
+           if (err) { return cb(new Error(err)); }
+            console.log('finished processing picture ' + pictures.name);
            cb();
         });
     }
