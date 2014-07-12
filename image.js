@@ -11,7 +11,7 @@ var exec = require('child_process').exec;
 
 function Image(params) {
 
-    this.name = params.name;
+    this.name = params.name.replace(/\s/g, '\\ ');
     this.mode = params.mode || '0755';
 
     this.target = params.target;
@@ -115,14 +115,18 @@ Image.prototype.resize = function (cb) {
 Image.prototype.optimize = function(cb) {
     var self = this;
 
+    var ext = '';
+    if (self.targetType === 'JPEG') { ext = '.jpg'; }
+    if (self.targetType === 'PNG') { ext = '.png'; }
+
     switch(self.srcType) {
         case 'JPEG':
-            self.jpegoptim(self.target + '/' + self.name, function(err, stdout, stderr) {
+            self.jpegoptim(self.target + '/' + self.name + ext, function(err, stdout, stderr) {
                 return cb(err, stdout, stderr);
             });
             break;
         case 'PNG':
-            self.optipng(self.target + '/' + self.name, function(err, stdout, stderr) {
+            self.optipng(self.target + '/' + self.name + ext, function(err, stdout, stderr) {
                 return cb(err, stdout, stderr);
             });
             break;
