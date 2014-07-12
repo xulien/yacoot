@@ -39,25 +39,26 @@ Image.prototype.exec = function(cb) {
     async.waterfall([
         function(callback) {
             self.info(function(err) {
-                callback(null);
+                callback(err);
             });
         },
 
         function(callback) {
             self.resize(function(err) {
-                callback(null);
+                callback(err);
             });
         },
 
         function(callback) {
             self.optimize(function(err, stdout, stderr) {
-                callback(null, stdout, stderr);
+                callback(err, stdout, stderr);
             });
         }],
-    function(err, result) {
-        cb(err, result);
+    function(err, stdout, stderr) {
+        if (stderr) { return cb(new Error(stderr)); }
+        cb(err, stdout);
     });
-}
+};
 
 Image.prototype.info = function (cb) {
     var self = this;
@@ -109,7 +110,7 @@ Image.prototype.resize = function (cb) {
         });
     });
 
-}
+};
 
 Image.prototype.optimize = function(cb) {
     var self = this;
@@ -129,18 +130,18 @@ Image.prototype.optimize = function(cb) {
             cb(new Error('picture are not JPG or PNG'));
     }
 
-}
+};
 
 Image.prototype.jpegoptim = function (path, cb) {
     exec('jpegoptim --max=80 --strip-all --all-progressive ' + path, function(err, stdout, stderr) {
         cb(err, stdout, stderr);
     });
-}
+};
 
 Image.prototype.optipng = function (path, cb) {
     exec('optipng -o5 ' + path, function(err, stdout, stderr) {
         cb(err, stdout, stderr);
     });
-}
+};
 
 module.exports = Image;
