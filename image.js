@@ -137,7 +137,7 @@ Image.prototype.optimize = function(cb) {
 };
 
 Image.prototype.jpegoptim = function (path, cb) {
-    exec('jpegoptim --max=80 --strip-all --all-progressive ' + path, function(err, stdout, stderr) {
+    exec('jpegoptim --max=80 --strip-all ' + path, function(err, stdout, stderr) {
         cb(err, stdout, stderr);
     });
 };
