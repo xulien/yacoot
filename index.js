@@ -39,12 +39,11 @@ Yacoot.prototype.exec = function (cb) {
             .to(self.outputs)
             .exec(function (err) {
                 if (err) return done(new Error(err));
-                done();
+                done(null);
         });
 
     }, function (err) {
-        if (err) throw err;
-        cb();
+        cb(err);
     });
 
 

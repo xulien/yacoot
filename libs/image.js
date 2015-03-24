@@ -32,25 +32,24 @@ Image.prototype.exec = function (cb) {
     var self = this;
 
     identify(self.input.src, function (err, inputDesc) {
-        if (err) throw err;
+        if (err) return cb(err);
         self.input = inputDesc;
 
         async.each(self._operations, function (operation, done) {
             if (!operation.name) operation.name = inputDesc.name + '-' + operation.width + 'x' + operation.height;
 
             resize(self.input, operation, function (err) {
-                if (err) throw err;
+                if (err) return done(err);
 
                 optimize(operation.target + '/' + operation.name + '.' + operation.type, operation.type, function (err) {
-                    if (err) throw err;
+                    if (err) return done(err);
 
-                    return done();
+                    return done(null);
                 });
             });
 
         }, function (err) {
-            if (err) throw err;
-            cb();
+            cb(err);
         });
 
     });

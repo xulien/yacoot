@@ -19,8 +19,7 @@ module.exports = function (input, output, cb) {
             output.type,
             function (err, stdout, stderr) {
                 if (stderr) return cb(new Error(stderr));
-                if (err) return cb(err);
-                cb(null);
+                cb(err);
             });
 
     })
