@@ -79,3 +79,4 @@ Module for resize, crop and optimize pictures for web
 ## TODO
 * improved testing (so much...)
 * add quality factor to jpegoptim and optipng (actually is 100% lossless)
+* preserve/save original file
