@@ -1,18 +1,18 @@
 {
   "name": "yacoot",
-  "version": "0.0.5",
-  "description": "ALPHA  not ready for production use! Yet Another Creator and Optimizer Of Thumbnail, a module for resize, crop and optimize pictures for web",
+  "version": "0.9.0",
+  "description": "Yet Another Creator and Optimizer Of Thumbnail, a module for resize, crop and optimize pictures for web",
   "main": "index.js",
   "scripts": {
     "test": "mocha"
   },
   "devDependencies": {
-    "mocha": "^1.20.1",
-    "should": "^4.0.4"
+    "chai": "^2.1.2",
+    "mocha": "^2.2.1"
   },
-  "repository" : {
-    "type" : "git",
-    "url" : "https://github.com/xulien/yacoot.git"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xulien/yacoot.git"
   },
   "keywords": [
     "crop",
@@ -24,6 +24,7 @@
   "license": "ISC",
   "dependencies": {
     "async": "^0.9.0",
+    "clone": "^1.0.1",
     "mkdirp": "^0.5.0"
   }
 }

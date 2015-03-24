@@ -1,38 +1,51 @@
 "use strict";
 
-var Image = require('./image');
+var image = require('./libs/image');
 var async = require('async');
 
-module.exports = function(pictures, cb) {
+module.exports = Yacoot;
 
-    if (Array.isArray(pictures)) {
+function Yacoot(arrayOfObjectFiles) {
 
-        var q = async.queue(function (task, callback) {
-            var image = new Image(task);
-            image.exec(function(err) {
-                if (err) { return cb(new Error(err)); }
-                callback();
-            });
-        }, 2);
+    if (!(this instanceof Yacoot)) return new Yacoot(arrayOfObjectFiles);
 
-        q.drain = function() {
-            console.log('all pictures have been processed');
-            cb();
-        }
-
-        pictures.forEach(function(picture){
-            q.push(picture, function (err) {
-                console.log('finished processing picture ' + picture.name);
-            });
-        });
-
-    } else {
-        var image = new Image(pictures);
-        image.exec(function(err) {
-           if (err) { return cb(new Error(err)); }
-            console.log('finished processing picture ' + pictures.name);
-           cb();
-        });
-    }
+    this.arrayOfObjectFiles = (Array.isArray(arrayOfObjectFiles)) ? arrayOfObjectFiles : [arrayOfObjectFiles];
+    this.params = {};
+    this.outputs = [];
 
 }
+
+Yacoot.prototype.global = function (params) {
+    this.params = params || {};
+    return this;
+};
+
+Yacoot.prototype.to = function (output) {
+    var self = this;
+    if (!output) output = {};
+    Object.keys(self.params).forEach(function (key) {
+        if (!output[key]) output[key] = self.params[key];
+    });
+    self.outputs.push(output);
+    return self;
+};
+
+Yacoot.prototype.exec = function (cb) {
+    var self = this;
+
+    async.each(self.arrayOfObjectFiles, function (file, done) {
+
+        image(file.path)
+            .to(self.outputs)
+            .exec(function (err) {
+                if (err) return done(new Error(err));
+                done();
+        });
+
+    }, function (err) {
+        if (err) throw err;
+        cb();
+    });
+
+
+};
