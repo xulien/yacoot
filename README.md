@@ -30,7 +30,6 @@ Module for resize, crop and optimize pictures for web
             .to({
                 height: 400,
                 target: __dirname + '/otherTarget/[originalName]-100x400.jpg'
-
             })
 
             // crop and resize to ./foo-large.png 600x100
@@ -79,4 +78,4 @@ Module for resize, crop and optimize pictures for web
 
 ## TODO
 * improved testing (so much...)
-* add quality factor to jpegoptim and optipng // actually is 100% (lossless)
+* add quality factor to jpegoptim and optipng (actually is 100% lossless)
