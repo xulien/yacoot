@@ -1,10 +1,19 @@
-var cp = require('child_process');
+var execFile = require('child_process').execFile;
+var jpegoptim = require('jpegoptim-bin');
+
 
 module.exports = function (path, cb) {
-    cp.exec(
-        'jpegoptim --strip-all --all-progressive --preserve ' + path,
-        function (err, stdout, stderr) {
-            if (stderr) return cb(new Error(stderr));
-            cb(err);
-        });
+  var args = [
+      '--override',
+      '--strip-all',
+      '--strip-iptc',
+      '--strip-icc',
+      '--all-progressive',
+      path
+  ];
+
+  execFile(jpegoptim.path, args, function (err) {
+      cb(err);
+  });
+
 };

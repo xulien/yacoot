@@ -49,7 +49,7 @@ describe('index', function () {
                                                     assert.equal(info21.size, "4.69KB");
                                                     assert.equal(info02.size, "15.6KB");
                                                     assert.equal(info12.size, "18.5KB");
-                                                    assert.equal(info22.size, "7.53KB");
+                                                    assert.equal(info22.size, "7.54KB");
                                                     assert.equal(info03.size, "34.4KB");
                                                     assert.equal(info13.size, "47.6KB");
                                                     assert.equal(info23.size, "12.1KB");
