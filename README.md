@@ -16,55 +16,55 @@ Module for resize, crop and optimize pictures for web
 
 var Yacoot = require('yacoot');
 
-app.post('/foo/bar', function(req, res) {
+Yacoot(string|[string, string, ...]|{multer object with path}|{multer object with buffer}) 
+    // global is optional and override default parameters
+    .global({
+        target: '/defaultTarget/',
+        height: 100
+    })
 
-    Yacoot(req.files.baz) // single or multiple files
+    // crop and resize to ./defaultTarget/foo-large.jpg 100x400
+    .to({
+        height: 400,
+        target: '/otherTarget/noname-100x400.jpg'
+    })
 
-        // global is optional and override default parameters
-        .global({
-            target: __dirname + '/defaultTarget/',
-            height: 100
-        })
+    // crop and resize to ./foo-large.png 600x100
+    .to({
+        width: 600,
+        name: 'foo-large',
+        type: 'png'
+    })
 
-        // crop and resize to ./defaultTarget/foo-large.jpg 100x400
-        .to({
-            height: 400,
-            target: __dirname + '/otherTarget/[originalName]-100x400.jpg'
-        })
+    // save to s3 storage instead of local file system
+    .to({
+      s3: {
+        key: 'myapikey',
+        secret: 'mysecret',
+        bucket: 'mybucket',
+        endpoint: 'host'
+      }
+    })
 
-        // crop and resize to ./foo-large.png 600x100
-        .to({
-            width: 600,
-            name: 'foo-large',
-            type: 'png'
-        })
+    // crop and resize to ./bar.jpg 200x133
+    .to({
+        ratio: 4/3
+        name: 'bar'
+    })
 
-        // crop and resize to ./[originalName]-100x400.jpg 200x200, it's default size.
-        .to()
+    ...
 
-        // crop and resize to ./bar.jpg 200x133
-        .to({
-            ratio: 4/3
-            name: 'bar'
-        })
+    // at last
+    .exec(function(err) {
 
-        // another output again...
-        .to({
-            ...
-        })
-        ...
+        console.log('all outputs processed');
+        res.redirect('/');
 
-        // at last
-        .exec(function(err) {
+    });
 
-            console.log('all outputs processed');
-            res.redirect('/');
+    // outputs files are optimized by mozjpeg
 
-        });
 
-        // outputs files are optimized lossless by jpegoptim or optipng
-
-});
 
 ```
 
@@ -73,10 +73,8 @@ app.post('/foo/bar', function(req, res) {
     width: 200
     height: 200
     ratio: 1
-    type: 'jpg'
-    target: __dirname + '/'
+    target: '/'
 
 ## TODO
 * improved testing (so much...)
-* add quality factor to jpegoptim and optipng (actually is 100% lossless)
 * preserve/save original file

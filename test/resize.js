@@ -1,47 +1,40 @@
-var assert = require('chai').assert;
-var mocha = require('mocha');
-var describe = mocha.describe;
-var it = mocha.it;
+var assert = require('chai').assert
+var fs = require('fs')
+var resize = require('../libs/resize')
+var dcp = require('duplex-child-process')
 
-var resize = require('../libs/resize');
-var identify = require('../libs/identify');
+var readStream = fs.createReadStream('./test/sample2.jpg');
 
-var sample = __dirname + '/sample1.jpg';
+describe('resize', function() {
+  it('sample2', function(done) {
 
-describe('resize', function () {
+    var input = {
+      width: 300,
+      height: 200,
+      cquality: 80,
+      size: '10.7KB',
+      type: 'JPEG',
+      ratio: 1.5
+    };
 
-    it('should create a cropped and resized picture', function (done) {
+    var output = {
+      width: 100,
+      height: 50,
+      ratio: 1.5
+    };
 
-        var input = {
-            width: 705,
-            height: 1024,
-            type: 'JPEG',
-            name: 'sample1',
-            src: '/home/jules/Travail/dev/yacoot/test/sample1.jpg',
-            ratio: 0.6884765625
-        };
+    var getFormat = dcp.spawn('identify', ['-format', '{\\"width\\":%w,\\"height\\":%h,\\"cquality\\":%Q,\\"size\\":\\"%b\\",\\"type\\":\\"%m\\"}',
+      '-'
+    ]);
 
-        var output = {
-            width: 240,
-            height: 153,
-            ratio: 240 / 153,
-            target: __dirname + '/result',
-            name: 'resizeTest',
-            type: 'jpg'
-        };
-
-        resize(input, output, function (err) {
-            assert.isNull(err);
-
-            identify(__dirname + '/result/resizeTest.jpg', function (err, info) {
-                assert.isNull(err);
-                assert.equal(info.width, 240);
-                assert.equal(info.height, 153);
-                assert.equal(info.size, '19.7KB');
-                done();
-            });
-
-        });
-    });
-
+    readStream.pipe(resize(input, output)).pipe(getFormat).once('readable', function() {
+      var format = JSON.parse(this.read().toString('utf8'));
+      assert.equal(format.width, 75);
+      assert.equal(format.height, 50);
+      assert.equal(format.cquality, 80);
+      assert.equal(format.size, '1.48KB');
+      assert.equal(format.type, 'JPEG');
+      done();
+    })
+  });
 });

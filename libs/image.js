@@ -1,84 +1,32 @@
-"use strict";
-
-var async = require('async');
-var identify = require('./identify');
-var resize = require('./resize');
-var optimize = require('./optimize');
-var clone = require('clone');
+var async = require('async')
+var resize = require('./resize')
+var debug = require('debug')('yacoot')
+var mozjpeg = require('mozjpeg-stream')
+var write = require('./write')
 
 module.exports = Image;
 
-function Image(src) {
+function Image(srcStream, report, outputs, cb) {
+  var self = this;
+  debug('Starting image process');
+  async.each(outputs, function(output, done) {
+      if (!output.name)
+        output.name = 'noname-' + output.width + 'x' + output.height;
+      debug('Starting %s process', output.name);
 
-    if (!(this instanceof Image)) return new Image(src);
-
-    this.input = {};
-    this.input.src = src;
-
-    this.output = {
-        mode: '0755',
-        width: 200,
-        height: 200,
-        ratio: 1,
-        type: 'jpg',
-        target: __dirname + '/'
-    };
-
-    this._operations = [];
+      srcStream
+        .pipe(resize(report, output))
+        .pipe(mozjpeg({
+          quality: 95
+        }))
+        .pipe(write(output))
+        .on('close', function() {
+          debug('%s done', output.name);
+          done();
+        });
+    },
+    function(err) {
+      cb(err);
+    });
 
 }
-
-Image.prototype.exec = function (cb) {
-    var self = this;
-
-    identify(self.input.src, function (err, inputDesc) {
-        if (err) return cb(err);
-        self.input = inputDesc;
-
-        async.each(self._operations, function (operation, done) {
-            if (!operation.name) operation.name = inputDesc.name + '-' + operation.width + 'x' + operation.height;
-
-            resize(self.input, operation, function (err) {
-                if (err) return done(err);
-
-                optimize(operation.target + '/' + operation.name + '.' + operation.type, operation.type, function (err) {
-                    if (err) return done(err);
-
-                    return done(null);
-                });
-            });
-
-        }, function (err) {
-            cb(err);
-        });
-
-    });
-
-};
-
-Image.prototype.to = function (params) {
-    if (!params) params = {};
-
-    var self = this;
-
-    if (!Array.isArray(params)) {
-        params = [params];
-    }
-
-    params.forEach(function (output) {
-
-        var that = clone(self);
-
-        if (output.width) that.output.width = output.width;
-        if (output.height) that.output.height = output.height;
-        if (output.mode) that.output.mode = output.mode;
-        if (output.type) that.output.type = output.type;
-        if (output.name) that.output.name = output.name;
-        if (output.target) that.output.target = output.target;
-        that.output.ratio = that.output.width / that.output.height;
-
-        self._operations.push(that.output);
-    });
-
-    return self;
-};

@@ -1,27 +1,20 @@
-var cp = require('child_process');
-var mkdirp = require('mkdirp');
+var dcp = require('duplex-child-process')
+var debug = require('debug')('yacoot')
 
-module.exports = function (input, output, cb) {
+module.exports = function(input, output) {
+  debug('%s will be resized', output.name);
 
-    var geometrie = (output.ratio > input.ratio) ? output.width : 'x' + output.height;
+  var geometrie = (output.ratio > input.ratio) ? output.width : 'x' + output.height;
+  debug('geometrie: %s', geometrie);
+  var args = [
+    '-',
+    '-resize', geometrie,
+    '-gravity', 'center',
+    '-crop', output.width + 'x' + output.height + '+0+0',
+    'JPEG:-'
+  ];
 
-    mkdirp(output.target, output.mode, function (err) {
-        if (err) return cb(err);
+  var convert = dcp.spawn('convert', args);
+  return convert;
 
-        cp.exec(
-            'convert ' + input.src +
-            ' -resize ' + geometrie +
-            ' -gravity center -crop ' +
-            output.width + 'x' +
-            output.height + '+0+0 ' +
-            output.target + '/' +
-            output.name + '.' +
-            output.type,
-            function (err, stdout, stderr) {
-                if (stderr) return cb(new Error(stderr));
-                cb(err);
-            });
-
-    })
-
-};
+}

@@ -1,25 +1,28 @@
-var cp = require('child_process');
+var fs = require('fs')
+var spawn = require('child_process').spawn
+var debug = require('debug')('yacoot')
 
-module.exports = function (srcPath, cb) {
-    cp.exec(
-        'identify -format "{' +
-        ' \\"width\\":%w,' +
-        ' \\"height\\":%h,' +
-        ' \\"colors\\":%k,' +
-        ' \\"cquality\\":%Q,' +
-        ' \\"size\\":\\"%b\\",' +
-        ' \\"type\\":\\"%m\\",' +
-        ' \\"name\\":\\"%t\\" ' +
-        '}" ' + srcPath,
-        function (err, stdout, stderr) {
+module.exports = function(readStream, cb) {
+  var data, str, args = ['-format',
+    '{\\"width\\":%w,\\"height\\":%h,\\"cquality\\":%Q,\\"size\\":\\"%b\\",\\"type\\":\\"%m\\"}',
+    '-'
+  ];
+  var identify = spawn('identify', args);
 
-            if (stderr) return cb(new Error(stderr));
-            if (err) return cb(err);
+  readStream.pipe(identify.stdin);
 
-            var report = JSON.parse(stdout);
-            report.src = srcPath;
-            report.ratio = report.width / report.height;
+  identify.stdout.on('data', function(chunk) {
+    data = chunk;
+  });
 
-            cb(null, report);
-        });
-};
+  identify.stdout.on('end', function() {
+    try {
+      var report = JSON.parse(data);
+      report.ratio = report.width / report.height;
+      debug('Image has been identified');
+      return cb(null, report);
+    } catch (e) {
+      return cb(new Error(e));
+    }
+  });
+}

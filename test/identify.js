@@ -1,25 +1,20 @@
 var assert = require('chai').assert;
-var mocha = require('mocha');
-var describe = mocha.describe;
-var it = mocha.it;
-
+var fs = require('fs');
 var identify = require('../libs/identify');
 
-var sample = __dirname + '/' + 'sample0.jpg';
+var readStream = fs.createReadStream('./test/sample2.jpg');
 
-describe('identify', function () {
-
-    it('should return report object', function (done) {
-        identify(sample, function (err, report) {
-            assert.equal(report.width, 1200);
-            assert.equal(report.height, 982);
-            assert.equal(report.type, 'JPEG');
-            assert.equal(report.name, 'sample0');
-            assert.equal(report.colors, 136641);
-            assert.equal(report.cquality, 94);
-            done();
-        });
+describe('identify', function() {
+  it('sample2', function(done) {
+    var report = identify(readStream, function(err, report) {
+      assert.isNull(err, 'there was no error');
+      assert.equal(report.width, 300);
+      assert.equal(report.height, 200);
+      assert.equal(report.cquality, 80);
+      assert.equal(report.size, '10.7KB');
+      assert.equal(report.type, 'JPEG');
+      assert.equal(report.ratio, 1.5);
+      done();
     });
-
+  });
 });
-
