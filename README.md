@@ -76,5 +76,5 @@ Yacoot(string|[string, string, ...]|{multer object with path}|{multer object wit
     target: '/'
 
 ## TODO
-* improved testing (so much...)
+* improved testing
 * preserve/save original file

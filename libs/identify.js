@@ -4,7 +4,7 @@ var debug = require('debug')('yacoot')
 
 module.exports = function(readStream, cb) {
   var data, str, args = ['-format',
-    '{\\"width\\":%w,\\"height\\":%h,\\"cquality\\":%Q,\\"size\\":\\"%b\\",\\"type\\":\\"%m\\"}',
+    '{\\"width\\":%w,\\"height\\":%h,\\"cquality\\":%Q,\\"size\\":\\"%b\\",\\"type\\":\\"%m\\",\\"red\\":%[fx:mean.r],\\"green\\":%[fx:mean.g],\\"blue\\":%[fx:mean.b]}',
     '-'
   ];
   var identify = spawn('identify', args);
