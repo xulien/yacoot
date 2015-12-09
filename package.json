@@ -1,6 +1,6 @@
 {
   "name": "yacoot",
-  "version": "0.12.1",
+  "version": "0.12.2",
   "description": "Yet Another Creator and Optimizer Of Thumbnail, a module for resize, crop and optimize pictures for web",
   "main": "libs/yacoot.js",
   "scripts": {

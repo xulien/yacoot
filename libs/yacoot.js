@@ -6,7 +6,6 @@ var dcp = require('duplex-child-process')
 
 var image = require('./image')
 var toBuffer = require('./toBuffer')
-var identify = require('./identify')
 
 module.exports = Yacoot;
 
@@ -20,7 +19,6 @@ function Yacoot(src) {
     mode: '0755',
     width: 200,
     height: 200,
-    ratio: 1,
     target: '/'
   };
 
@@ -31,10 +29,15 @@ function Yacoot(src) {
 Yacoot.prototype.global = function(global) {
   debug('Modifying Global params');
   var self = this;
+
   Object.keys(global).forEach(function(key) {
-    debug('changing value \t %s: %s => %s', key, self.params[key], global[key]);
+    debug('changing value \t %s: %s => %s', key, self.params[key], global[
+      key]);
     self.params[key] = global[key];
   });
+
+  self.params.ratio = self.params.width / self.params.height;
+
   debug('Global settings ->', '\n', self.params, '\n');
   return this;
 };
@@ -45,9 +48,11 @@ Yacoot.prototype.to = function(params) {
   var self = this;
   var output = clone(this.params);
   Object.keys(params).forEach(function(key) {
-    debug('changing default value \t %s: %s => %s', key, output[key], params[key]);
+    debug('changing default value \t %s: %s => %s', key, output[key],
+      params[key]);
     output[key] = params[key];
   });
+  output.ratio = output.width / output.height;
   debug('pushing to outputs list ->', '\n', output, '\n');
   self.outputs.push(output);
   return self;
@@ -67,19 +72,20 @@ Yacoot.prototype.exec = function(cb) {
           '-'
         ];
 
-        info.pipe(dcp.spawn('identify', args)).once('readable', function() {
-          var report = JSON.parse(this.read().toString('utf8'));
-          image(stream, report, self.outputs, function(err) {
-            if (err) return done(new Error(err));
-            done(null);
+        info.pipe(dcp.spawn('identify', args)).once('readable',
+          function() {
+            var report = JSON.parse(this.read().toString('utf8'));
+            report.ratio = report.width / report.height;
+            image(stream, report, self.outputs, function(err) {
+              if (err) return done(new Error(err));
+              done(null);
+            });
           });
-        });
 
       });
     },
     function(err) {
       cb(err);
     });
-
 
 };

@@ -16,7 +16,7 @@ Module for resize, crop and optimize pictures for web
 
 var Yacoot = require('yacoot');
 
-Yacoot(string|[string, string, ...]|{multer object with path}|{multer object with buffer}) 
+Yacoot(string|[string, string, ...]|{multer object with path}|{multer object with buffer})
     // global is optional and override default parameters
     .global({
         target: '/defaultTarget/',
@@ -46,12 +46,6 @@ Yacoot(string|[string, string, ...]|{multer object with path}|{multer object wit
       }
     })
 
-    // crop and resize to ./bar.jpg 200x133
-    .to({
-        ratio: 4/3
-        name: 'bar'
-    })
-
     ...
 
     // at last
@@ -72,7 +66,6 @@ Yacoot(string|[string, string, ...]|{multer object with path}|{multer object wit
     mode: '0755'
     width: 200
     height: 200
-    ratio: 1
     target: '/'
 
 ## TODO
