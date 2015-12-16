@@ -6,7 +6,7 @@ var debug = require('debug')('yacoot')
 module.exports = function(src, cb) {
   if (buffer.isBuffer(src)) {
     debug('object is allready a buffer')
-    return src;
+    return cb(null, src);
   }
   if (typeof src === 'string') {
     debug('Create buffer from string');
