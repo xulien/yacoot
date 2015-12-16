@@ -1,8 +1,13 @@
 var streamifier = require("streamifier")
 var fs = require('fs')
+var buffer = require('buffer');
 var debug = require('debug')('yacoot')
 
 module.exports = function(src, cb) {
+  if (buffer.isBuffer(src)) {
+    debug('object is allready a buffer')
+    return src;
+  }
   if (typeof src === 'string') {
     debug('Create buffer from string');
     fs.readFile(src, function(err, data) {
