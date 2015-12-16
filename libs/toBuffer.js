@@ -1,6 +1,6 @@
 var streamifier = require("streamifier")
 var fs = require('fs')
-var buffer = require('buffer');
+var buffer = require('buffer').Buffer;
 var debug = require('debug')('yacoot')
 
 module.exports = function(src, cb) {
