@@ -42,7 +42,7 @@ Yacoot(string|[string, string, ...]|{multer object with path}|{multer object wit
         key: 'myapikey',
         secret: 'mysecret',
         bucket: 'mybucket',
-        endpoint: 'host'
+        region: 'eu-central-1',
       }
     })
 
